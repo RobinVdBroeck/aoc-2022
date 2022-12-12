@@ -39,7 +39,49 @@ function first(input: string) {
   );
 }
 
-function second(input: string) {}
+function second(input: string) {
+  return _.chain(input.split("\n"))
+    .filter((line) => line.trim() !== "")
+    .reduce((accum, line) => {
+      if (accum.length === 0) {
+        accum = [[]];
+      }
+      let last = _.last(accum);
+      if (last.length === 3) {
+        accum.push([line]);
+      } else {
+        last.push(line);
+      }
+      return accum;
+    }, [] as string[][])
+    .map(([first, second, third]) => {
+      // find character that is in every line
+      for (const a of first) {
+        for (const b of second) {
+          if (a === b) {
+            for (const c of third) {
+              if (a === c) {
+                return c;
+              }
+            }
+          }
+        }
+      }
+      console.error("none matching");
+    })
+    .map((letter) => {
+      const ASCII_A = "A".charCodeAt(0);
+      const ASCII_a = "a".charCodeAt(0);
+      if (u.isUpper(letter)) {
+        return letter.charCodeAt(0) - ASCII_A + 27;
+      } else if (u.isLower(letter)) {
+        return letter.charCodeAt(0) - ASCII_a + 1;
+      }
+      console.error("invalid letter" + letter);
+    })
+    .sum()
+    .value();
+}
 
 if (import.meta.vitest) {
   const { it, describe, expect } = import.meta.vitest;
@@ -59,12 +101,12 @@ if (import.meta.vitest) {
       });
     });
 
-    describe.skip("second", () => {
+    describe("second", () => {
       it("example", async () => {
         const example = await u.read("day03.1-example.txt");
 
         const result = second(example);
-        expect(result).toBe(12);
+        expect(result).toBe(70);
       });
       it("result", async () => {
         const example = await u.read("day03.1-real.txt");
