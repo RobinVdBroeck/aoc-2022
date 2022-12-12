@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { win32 } from "path";
 
 import * as u from "./util.js";
 
